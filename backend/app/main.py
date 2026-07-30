@@ -14,7 +14,7 @@ from .config import settings
 from .database import Base, SessionLocal, engine, get_db
 from .engine import execute_graph, validate_graph
 from .models import Execution, Template, User, Workflow, WorkflowVersion
-from .schemas import ExecutionOut, ExecutionRequest, LoginRequest, TokenResponse, UserOut, WorkflowCreate, WorkflowOut, WorkflowUpdate
+from .schemas import ExecutionLogOut, ExecutionOut, ExecutionRequest, LoginRequest, TokenResponse, UserOut, WorkflowCreate, WorkflowOut, WorkflowUpdate
 from .seed import seed
 from .worker import execute_workflow_task
 
@@ -115,6 +115,11 @@ def execution_detail(execution_id: str, db: Session = Depends(get_db), user: Use
     execution = db.scalar(select(Execution).where(Execution.id == execution_id, Execution.tenant_id == user.tenant_id))
     if not execution: raise HTTPException(404, "Execution not found")
     return execution
+
+
+@app.get("/api/v1/executions/{execution_id}/logs", response_model=list[ExecutionLogOut])
+def execution_logs(execution_id: str, db: Session = Depends(get_db), user: User = Depends(current_user)):
+    return execution_detail(execution_id, db, user).logs
 
 
 @app.get("/api/v1/executions/{execution_id}/events")

@@ -1,18 +1,18 @@
 # AgentFlow
 
-AgentFlow is a portfolio-grade AI Agent workflow orchestration platform. It combines a visual React Flow editor with a FastAPI backend, persistent workflow versions, a DAG execution engine, node-level logs, model usage accounting, and a deterministic mock LLM mode.
+AgentFlow 是一个适合作品集展示的 AI Agent 工作流编排平台。项目将可视化 React Flow 编辑器、FastAPI 后端、持久化工作流版本、DAG 执行引擎、节点级日志、模型用量统计，以及确定性 Mock LLM 模式组合成一套完整的前后端工程。
 
-## Highlights
+## 核心能力
 
-- Visual trigger, Agent, condition, HTTP, notification, and output nodes.
-- DAG cycle validation and topological execution.
-- Published immutable workflow versions.
-- PostgreSQL persistence with tenant-scoped data.
-- Redis/Celery asynchronous execution in Docker; inline mode for local development.
-- Mock Agent mode for a complete zero-key demo.
-- Execution logs, token/cost analytics, templates, and audit-ready architecture.
+- 可视化触发器、Agent、条件判断、HTTP、通知和输出节点。
+- DAG 环检测与拓扑执行。
+- 发布后不可变的工作流版本。
+- 基于 PostgreSQL 的持久化存储，并按租户隔离数据。
+- Docker 环境下使用 Redis/Celery 异步执行；本地开发支持 inline 执行模式。
+- Mock Agent 模式支持零 API Key 完整演示。
+- 执行日志、Token/成本分析、模板能力，以及便于审计的系统架构。
 
-## Local Development
+## 本地开发
 
 ```powershell
 cd backend
@@ -27,7 +27,7 @@ npm install
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173`. The frontend automatically uses `demo@agentflow.dev` / `demo1234`.
+打开 `http://127.0.0.1:5173`。前端会自动使用演示账号 `demo@agentflow.dev` / `demo1234`。
 
 ## Docker Compose
 
@@ -35,19 +35,19 @@ Open `http://127.0.0.1:5173`. The frontend automatically uses `demo@agentflow.de
 docker compose up --build
 ```
 
-- Product: `http://localhost:8080`
-- API docs: `http://localhost:8000/docs`
-- Health: `http://localhost:8000/health/live`
+- 产品页面：`http://localhost:8080`
+- API 文档：`http://localhost:8000/docs`
+- 健康检查：`http://localhost:8000/health/live`
 
-## Demo Flow
+## 演示流程
 
-1. Inspect dashboard reliability and cost metrics.
-2. Open `工作流构建器`, select a node, and edit its label.
-3. Save and publish the workflow.
-4. Click `试运行`.
-5. Open `运行监控` to inspect persisted node logs and token cost.
+1. 查看总览看板中的可靠性指标和模型成本指标。
+2. 打开 `工作流构建器`，选择一个节点并编辑节点名称。
+3. 保存并发布工作流。
+4. 点击 `试运行`。
+5. 打开 `运行监控`，查看持久化节点日志和 Token 成本。
 
-## Architecture
+## 系统架构
 
 ```text
 React/Vite/React Flow
@@ -61,7 +61,7 @@ PostgreSQL ---- Redis/Celery
 OpenAI-compatible / deterministic mock gateway
 ```
 
-## Verification
+## 验证
 
 ```powershell
 cd backend
@@ -71,15 +71,14 @@ cd ..\frontend
 npm run build
 ```
 
-## Resume Copy
+## 简历描述
 
-**AgentFlow - Enterprise AI Agent Workflow Platform | Full-stack personal project**
+**AgentFlow - 企业级 AI Agent 工作流平台 | 全栈个人项目**
 
-- Built a visual multi-Agent workflow platform with React Flow and FastAPI, supporting graph validation, topological execution, conditional branches, retries, node logs, and workflow versioning.
-- Designed PostgreSQL tenant isolation, Redis/Celery asynchronous execution, JWT authentication, SSE status streaming, and Docker Compose deployment.
-- Implemented deterministic mock Agents and usage/cost analytics so reviewers can run the complete demo without paid API credentials.
+- 基于 React Flow 与 FastAPI 搭建可视化多 Agent 工作流平台，支持图结构校验、拓扑执行、条件分支、重试、节点日志和工作流版本管理。
+- 设计 PostgreSQL 租户隔离、Redis/Celery 异步执行、JWT 鉴权、SSE 状态推送和 Docker Compose 部署方案。
+- 实现确定性 Mock Agent 与用量/成本分析能力，使面试官无需付费 API 凭证也能跑通完整演示。
 
-## Honest Scope
+## 诚实范围说明
 
-Production billing, hundreds of third-party connectors, Kubernetes, collaborative editing, and full RAG administration remain roadmap items and are not represented as completed features.
-
+生产级计费、数百个第三方连接器、Kubernetes、多人协同编辑，以及完整 RAG 管理后台仍属于路线图内容，本文档不会将它们描述为已完成功能。

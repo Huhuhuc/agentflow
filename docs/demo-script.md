@@ -1,10 +1,9 @@
-# AgentFlow Interview Demo Script
+# AgentFlow 面试演示脚本
 
-1. Start with the dashboard: explain the north-star metric, success rate, and model cost.
-2. Open the workflow builder: explain the graph contract and six node types.
-3. Select the intent-classification Agent: explain structured output and mock/real gateway isolation.
-4. Publish: explain cycle validation and immutable versions.
-5. Run the seeded ticket: explain condition routing and manual fallback.
-6. Open execution monitoring: explain node logs, latency, token usage, and failure diagnosis.
-7. Close with the tradeoff: reliable orchestration and observability were prioritized before connector breadth.
-
+1. 先从总览看板开始：说明北极星指标、执行成功率和模型成本。
+2. 打开工作流构建器：说明工作流图结构以及六类节点。
+3. 选择“意图分类” Agent：说明结构化输出和 Mock/真实模型网关隔离。
+4. 发布工作流：说明环检测与不可变版本。
+5. 执行种子工单：说明条件路由和人工兜底。
+6. 打开运行监控：说明节点日志、延迟、Token 用量和故障定位。
+7. 最后说明产品取舍：首版优先保证工作流编排可靠性和可观测性，再扩展连接器数量。
