@@ -2,6 +2,11 @@
 
 AgentFlow 是一个适合作品集展示的 AI Agent 工作流编排平台。项目将可视化 React Flow 编辑器、FastAPI 后端、持久化工作流版本、DAG 执行引擎、节点级日志、模型用量统计，以及确定性 Mock LLM 模式组合成一套完整的前后端工程。
 
+## 项目与文档入口
+
+- [项目介绍](docs/project-introduction.md)：项目定位、核心能力、技术方案、演示亮点与简历表述。
+- [文档介绍](docs/documentation-guide.md)：仓库文档结构、推荐阅读顺序与各文档用途。
+
 ## 核心能力
 
 - 可视化触发器、Agent、条件判断、HTTP、通知和输出节点。
