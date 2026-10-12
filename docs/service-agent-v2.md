@@ -79,7 +79,7 @@ app.migrations提供001_core、002_service两个版本化增量建表步骤，�
 
     .\.venv\Scripts\python.exe -m app.migrations
 
-GitHub Actions配置后端回归、前端构建，以及PostgreSQL服务下的数据库升级/并发领取检查。CI尚未推送或实际运行；本机无Docker/PostgreSQL，对应本地测试跳过。
+GitHub Actions配置后端回归、前端构建，以及PostgreSQL服务下的数据库升级/并发领取检查。上传后云端后端检查已通过，包含PostgreSQL迁移与并发领取专项；本机无Docker/PostgreSQL，对应本地测试跳过。完整Compose及真实Redis/Celery部署仍待验收。
 
 /health/live检查进程，/health/ready检查数据库和Celery模式下的Redis；后者不证明所有worker在线。
 
@@ -95,6 +95,6 @@ GitHub Actions配置后端回归、前端构建，以及PostgreSQL服务下的�
 - 覆盖新库、旧库及重复升级，保留原有恢复和进程硬退出测试。
 - 浏览器实走了多轮补充、编辑审核、建单、刷新保留和页面Mock实验，截图位于docs/reference/service-workspace-v2.png及service-conversation-v2.png。
 - 已完成前端类型检查和构建。
-- 本机未运行Docker、真实Redis/Celery服务、PostgreSQL或模型API；相关部署配置和测试入口已准备，不能宣称已完成这些环境的验收。
+- 本机未运行Docker、真实Redis/Celery服务、PostgreSQL或模型API；云端CI已验证PostgreSQL迁移和并发领取，尚未完成完整Compose及真实模型的验收。
 
 后续扩展应根据真实失败记录决定是否加入向量检索、外部工单适配器或复杂Agent编排。本轮已建立这些扩展所需的持久状态、资料版本和评测入口。
