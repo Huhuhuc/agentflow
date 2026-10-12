@@ -27,8 +27,12 @@ services:
       DATABASE_URL: postgresql+psycopg://agentflow:agentflow@postgres:5432/agentflow
       REDIS_URL: redis://redis:6379/0
       EXECUTION_MODE: celery
-      JWT_SECRET: change-this-in-production
+      JWT_SECRET: ${JWT_SECRET:-dev-only-change-me}
+      DEMO_MODE: ${DEMO_MODE:-true}
       CORS_ORIGINS: http://localhost:5173,http://localhost:8080
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.deepseek.com}
+      OPENAI_MODEL: ${OPENAI_MODEL:-deepseek-flash}
     ports:
       - "8000:8000"
     depends_on:
@@ -39,11 +43,14 @@ services:
 
   worker:
     build: ./backend
-    command: celery -A app.worker.celery_app worker --loglevel=INFO --pool=solo
+    command: celery -A app.worker.celery_app worker --loglevel=INFO --pool=solo -Q celery,business,evaluation
     environment:
       DATABASE_URL: postgresql+psycopg://agentflow:agentflow@postgres:5432/agentflow
       REDIS_URL: redis://redis:6379/0
       EXECUTION_MODE: celery
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.deepseek.com}
+      OPENAI_MODEL: ${OPENAI_MODEL:-deepseek-flash}
     depends_on:
       postgres:
         condition: service_healthy

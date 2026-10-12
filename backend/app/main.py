@@ -3,31 +3,48 @@ from contextlib import asynccontextmanager
 import asyncio
 import json
 
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+from jose import JWTError, jwt
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from .auth import create_token, current_user, verify_password
 from .config import settings
 from .database import Base, SessionLocal, engine, get_db
-from .engine import execute_graph, validate_graph
-from .models import Execution, Template, User, Workflow, WorkflowVersion
+from .engine import validate_graph
+from .models import Execution, Template, User, Workflow, WorkflowVersion, WorkflowRunSnapshot
 from .schemas import ExecutionLogOut, ExecutionOut, ExecutionRequest, LoginRequest, TokenResponse, UserOut, WorkflowCreate, WorkflowOut, WorkflowUpdate
 from .seed import seed
 from .worker import execute_workflow_task
+from .agent_api import router as agent_router
+from .business_api import router as business_router
+from .service_api import router as service_router
+from .service_experiments import router as experiment_router
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    Base.metadata.create_all(bind=engine)
+    from .migrations import upgrade
+    upgrade(engine)
     with SessionLocal() as db:
-        seed(db)
-    yield
+        if settings.demo_mode: seed(db)
+    from .business_recovery import watchdog
+    stop = asyncio.Event()
+    recovery = asyncio.create_task(watchdog(SessionLocal, stop))
+    try:
+        yield
+    finally:
+        stop.set()
+        await recovery
 
 
 app = FastAPI(title=settings.app_name, version="1.0.0", lifespan=lifespan)
+app.include_router(agent_router)
+app.include_router(business_router)
+app.include_router(service_router)
+app.include_router(experiment_router)
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins.split(","), allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 
@@ -36,12 +53,30 @@ def live():
     return {"status": "ok"}
 
 
+@app.get("/health/ready")
+def ready():
+    from sqlalchemy import text
+    try:
+        with engine.connect() as connection: connection.execute(text("SELECT 1"))
+        if settings.execution_mode=="celery":
+            import redis
+            redis.Redis.from_url(settings.redis_url,socket_connect_timeout=2,socket_timeout=2).ping()
+    except Exception as exc:
+        raise HTTPException(503,"Dependency not ready: "+type(exc).__name__) from exc
+    return {"status":"ready","execution_mode":settings.execution_mode}
+
+
 @app.post("/api/v1/auth/login", response_model=TokenResponse)
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
     user = db.scalar(select(User).where(User.email == payload.email))
-    if not user or not verify_password(payload.password, user.password_hash):
+    if not user or not settings.demo_mode and user.email=="demo@agentflow.dev" or not verify_password(payload.password, user.password_hash):
         raise HTTPException(401, "Invalid credentials")
     return TokenResponse(access_token=create_token(user))
+
+
+@app.get("/api/v1/auth/config")
+def auth_config():
+    return {"demo_mode":settings.demo_mode}
 
 
 @app.get("/api/v1/auth/me", response_model=UserOut)
@@ -95,14 +130,18 @@ def publish(workflow_id: str, db: Session = Depends(get_db), user: User = Depend
 
 
 @app.post("/api/v1/workflows/{workflow_id}/execute", response_model=ExecutionOut)
-def execute(workflow_id: str, payload: ExecutionRequest, db: Session = Depends(get_db), user: User = Depends(current_user)):
+def execute(workflow_id: str, payload: ExecutionRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db), user: User = Depends(current_user)):
     workflow = workflow_detail(workflow_id, db, user)
-    execution = Execution(tenant_id=user.tenant_id, workflow_id=workflow.id, input_data=payload.input_data)
-    db.add(execution); db.commit(); db.refresh(execution)
+    execution = Execution(tenant_id=user.tenant_id, workflow_id=workflow.id, input_data=payload.input_data, status="pending")
+    latest = db.scalar(select(WorkflowVersion).where(WorkflowVersion.workflow_id == workflow.id).order_by(WorkflowVersion.version.desc()).limit(1))
+    db.add(execution); db.flush()
+    db.add(WorkflowRunSnapshot(execution_id=execution.id, graph=latest.graph if latest else workflow.graph, published_version=latest.version if latest else None))
+    db.commit(); db.refresh(execution)
     if settings.execution_mode == "celery":
         execute_workflow_task.delay(execution.id)
-        return execution
-    return execute_graph(db, execution, workflow.graph)
+    else:
+        background_tasks.add_task(execute_workflow_task, execution.id)
+    return execution
 
 
 @app.get("/api/v1/executions", response_model=list[ExecutionOut])
@@ -123,23 +162,52 @@ def execution_logs(execution_id: str, db: Session = Depends(get_db), user: User 
 
 
 @app.get("/api/v1/executions/{execution_id}/events")
-async def execution_events(execution_id: str, user: User = Depends(current_user)):
+async def execution_events(execution_id: str, request: Request, db: Session = Depends(get_db), token: str = Query(None)):
+    raw = request.headers.get("Authorization", "").replace("Bearer ", "") or token
+    try:
+        payload = jwt.decode(raw, settings.jwt_secret, algorithms=["HS256"])
+        user = db.get(User, payload.get("sub"))
+    except JWTError:
+        raise HTTPException(401, "Invalid token")
+    if not user:
+        raise HTTPException(401, "User not found")
+
     async def stream():
-        previous = None
-        for _ in range(120):
+        seen: set[str] = set()
+        last_status = None
+        for _ in range(300):
             with SessionLocal() as db:
                 execution = db.scalar(select(Execution).where(Execution.id == execution_id, Execution.tenant_id == user.tenant_id))
                 if not execution:
                     yield "event: error\ndata: {\"message\":\"not found\"}\n\n"
                     return
-                payload = {"id": execution.id, "status": execution.status, "duration_ms": execution.duration_ms, "token_used": execution.token_used}
-                encoded = json.dumps(payload)
-                if encoded != previous:
+                for log in execution.logs:
+                    if log.node_id not in seen:
+                        seen.add(log.node_id)
+                        node_event = {
+                            "node_id": log.node_id,
+                            "node_name": log.node_name,
+                            "node_type": log.node_type,
+                            "status": log.status,
+                            "token_used": log.token_used,
+                            "duration_ms": log.duration_ms,
+                        }
+                        yield f"event: node\ndata: {json.dumps(node_event, ensure_ascii=False)}\n\n"
+                payload = {
+                    "id": execution.id,
+                    "status": execution.status,
+                    "duration_ms": execution.duration_ms,
+                    "token_used": execution.token_used,
+                    "cost": execution.cost,
+                }
+                encoded = json.dumps(payload, ensure_ascii=False)
+                if encoded != last_status:
                     yield f"data: {encoded}\n\n"
-                    previous = encoded
+                    last_status = encoded
                 if execution.status in {"success", "failed", "cancelled"}:
+                    yield "event: done\ndata: {}\n\n"
                     return
-            await asyncio.sleep(0.5)
+            await asyncio.sleep(0.4)
     return StreamingResponse(stream(), media_type="text/event-stream")
 
 

@@ -10,3 +10,6 @@ frontend/dist/
 
 
 .worktrees/
+.playwright-cli/
+output/playwright/
+.superpowers/

@@ -36,4 +36,6 @@ def current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_
         raise HTTPException(401, "Invalid token") from exc
     if not user:
         raise HTTPException(401, "User not found")
+    if not settings.demo_mode and user.email=="demo@agentflow.dev":
+        raise HTTPException(401,"Demo account is disabled")
     return user

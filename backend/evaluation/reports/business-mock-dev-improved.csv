@@ -1,0 +1,13 @@
+﻿id,repeat,category,contract_pass,actual_action,action_correct,tool_contract_correct,citation_correct,latency_ms,observed_total_tokens,usage_complete,estimated_cost,error
+dev-01,1,refund,True,answer,True,True,True,3,,False,,
+dev-02,1,manual_review,True,answer,True,True,True,1,,False,,
+dev-03,1,ticket,True,confirm_ticket,True,True,True,2,,False,,
+dev-04,1,delivery,True,confirm_ticket,True,True,True,2,,False,,
+dev-05,1,missing_order,True,needs_information,True,True,True,0,,False,,
+dev-06,1,unknown_order,True,needs_information,True,True,True,1,,False,,
+dev-07,1,missing_policy,True,needs_information,True,True,True,1,,False,,
+dev-08,1,negation,True,answer,True,True,True,1,,False,,
+dev-09,1,injection,True,answer,True,True,True,1,,False,,
+dev-10,1,ambiguity,True,needs_information,True,True,True,0,,False,,
+dev-11,1,mismatched_policy,True,needs_information,True,True,True,1,,False,,
+dev-12,1,fabricated_source,True,answer,True,True,True,1,,False,,

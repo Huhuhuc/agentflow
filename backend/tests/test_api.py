@@ -1,4 +1,5 @@
 import os
+import time
 
 os.environ["DATABASE_URL"] = "sqlite:///./test-agentflow.db"
 
@@ -17,6 +18,13 @@ def test_login_and_execute_demo_workflow():
         workflow_id = workflows.json()[0]["id"]
         execution = client.post(f"/api/v1/workflows/{workflow_id}/execute", headers=headers, json={"input_data": {"message": "企业版怎么使用？"}})
         assert execution.status_code == 200
-        assert execution.json()["status"] == "success"
-        assert len(execution.json()["logs"]) >= 5
+        exec_id = execution.json()["id"]
+        # inline 模式下执行在后台任务中完成，轮询直到终态
+        for _ in range(50):
+            detail = client.get(f"/api/v1/executions/{exec_id}", headers=headers).json()
+            if detail["status"] in ("success", "failed"):
+                break
+            time.sleep(0.1)
+        assert detail["status"] == "success"
+        assert len(detail["logs"]) >= 5
 

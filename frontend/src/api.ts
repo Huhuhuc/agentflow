@@ -1,6 +1,17 @@
-const BASE = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api/v1'
+export const BASE = import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api/v1'
 
-export async function bootstrapSession() {
+let sessionPromise: Promise<void> | null = null
+export function bootstrapSession() {
+  if (!sessionPromise) sessionPromise = initializeSession().finally(() => { sessionPromise = null })
+  return sessionPromise
+}
+
+async function initializeSession() {
+  if (localStorage.getItem('agentflow_token')) {
+    try { await api('/auth/me'); return } catch { localStorage.removeItem('agentflow_token') }
+  }
+  const config = await fetch(BASE + '/auth/config').then(r => { if (!r.ok) throw new Error('API unavailable'); return r.json() })
+  if (!config.demo_mode) throw new Error('请使用自己的账号登录')
   const response = await fetch(`${BASE}/auth/login`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({email:'demo@agentflow.dev',password:'demo1234'}) })
   if (!response.ok) throw new Error('Unable to login to demo account')
   const data = await response.json()

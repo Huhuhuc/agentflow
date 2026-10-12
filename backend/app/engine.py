@@ -6,6 +6,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
+from .llm import call_llm
 from .models import Execution, ExecutionLog
 
 
@@ -59,6 +60,39 @@ def topological_order(graph: dict[str, Any]) -> list[str]:
     return ordered
 
 
+def terminal_node_ids(graph: dict[str, Any]) -> list[str]:
+    """返回图中所有无出边的节点（真正的终点），按节点声明顺序。
+
+    不依赖 nodes 数组的排列顺序，因此新增节点或调整顺序都不会改变结果。
+    """
+    node_ids = [node["id"] for node in graph.get("nodes", [])]
+    known = set(node_ids)
+    with_outgoing = {
+        edge.get("source")
+        for edge in graph.get("edges", [])
+        if edge.get("source") in known and edge.get("target") in known
+    }
+    return [node_id for node_id in node_ids if node_id not in with_outgoing]
+
+
+def pick_terminal(graph: dict[str, Any], order: list[str], executed: list[str]) -> str | None:
+    """在实际执行到的节点中挑选代表最终结果的节点。
+
+    优先级：已执行的 output 节点 > 已执行的无出边节点 > 最后一个已执行节点。
+    条件分支导致部分终点被跳过时，仍能取到真正走通的那条分支的结果。
+    """
+    nodes = {node["id"]: node for node in graph.get("nodes", [])}
+    executed_set = set(executed)
+    terminals = set(terminal_node_ids(graph))
+    reached = [node_id for node_id in order if node_id in terminals and node_id in executed_set]
+    outputs = [node_id for node_id in reached if nodes.get(node_id, {}).get("type") == "output"]
+    chosen = outputs or reached
+    if chosen:
+        return chosen[-1]
+    ran = [node_id for node_id in order if node_id in executed_set]
+    return ran[-1] if ran else None
+
+
 TOKEN_PATTERN = re.compile(r"\{\{\s*([^}]+)\s*\}\}")
 
 
@@ -79,10 +113,7 @@ def run_node(node: dict[str, Any], context: dict[str, Any]) -> tuple[dict[str, A
     if node_type == "trigger":
         return context.get("trigger", {}), 0
     if node_type == "agent":
-        source = json.dumps(context, ensure_ascii=False).lower()
-        category = "complaint" if any(word in source for word in ["投诉", "退款", "complaint", "angry"]) else "inquiry"
-        confidence = 0.72 if category == "complaint" else 0.94
-        return {"category": category, "confidence": confidence, "text": "已根据知识库生成处理建议。", "model": config.get("model", "mock-agent")}, 168
+        return call_llm(config, context)
     if node_type == "condition":
         field = config.get("field", "")
         expected = config.get("value")
@@ -114,22 +145,30 @@ def execute_graph(db: Session, execution: Execution, graph: dict[str, Any]) -> E
     for edge in graph.get("edges", []):
         incoming_labels[edge["target"]].append(edge)
     context: dict[str, Any] = {"trigger": execution.input_data}
+    executed: list[str] = []
+    order = topological_order(graph)
     try:
-        for node_id in topological_order(graph):
+        for node_id in order:
             node = nodes[node_id]
-            should_skip = False
-            for edge in incoming_labels[node_id]:
-                source_result = context.get(edge["source"], {})
-                label = edge.get("label")
-                if label == "true" and not source_result.get("matched"):
-                    should_skip = True
-                if label == "false" and source_result.get("matched"):
-                    should_skip = True
+            incoming = incoming_labels[node_id]
+            active_edges = [edge for edge in incoming if edge["source"] in context and
+                            (edge.get("label") not in {"true", "false"} or
+                             bool(context[edge["source"]].get("matched")) == (edge["label"] == "true"))]
+            should_skip = bool(incoming) and not active_edges
             status = "skipped" if should_skip else "success"
             node_start = time.perf_counter()
-            output, tokens = ({}, 0) if should_skip else run_node(node, context)
+            try:
+                output, tokens = ({}, 0) if should_skip else run_node(node, context)
+            except Exception as exc:
+                db.add(ExecutionLog(execution_id=execution.id, node_id=node_id,
+                    node_name=node.get("data", {}).get("label", node_id), node_type=node.get("type", "unknown"),
+                    status="failed", input_data=context.get("trigger", {}), output_data={},
+                    duration_ms=int((time.perf_counter() - node_start) * 1000), error_message=str(exc)))
+                db.commit()
+                raise
             if not should_skip:
                 context[node_id] = output
+                executed.append(node_id)
             log = ExecutionLog(
                 execution_id=execution.id,
                 node_id=node_id,
@@ -143,8 +182,9 @@ def execute_graph(db: Session, execution: Execution, graph: dict[str, Any]) -> E
             )
             db.add(log)
             execution.token_used += tokens
-        terminal = graph.get("nodes", [])[-1]["id"]
-        execution.output_data = context.get(terminal, context)
+            db.commit()
+        terminal = pick_terminal(graph, order, executed)
+        execution.output_data = context.get(terminal, context) if terminal else context
         execution.status = "success"
         execution.cost = round(execution.token_used * 0.000002, 6)
     except Exception as exc:

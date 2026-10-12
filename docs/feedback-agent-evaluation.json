@@ -1,0 +1,339 @@
+{
+  "mode": "mock",
+  "dataset": "feedback_cases.json",
+  "sample_count": 8,
+  "synthetic": true,
+  "limitations": "8 synthetic labelled cases, no statistical significance. Rule/single response have no retrieval; agent has tools. Mock single response reuses the rule classifier. Mock metrics verify mechanics, not real model quality. Tokens are zero in Mock; cost is unavailable. Evidence checks validate IDs, not semantic entailment. No external tickets are created.",
+  "reports": [
+    {
+      "strategy": "rule",
+      "metrics": {
+        "category_correct": 100.0,
+        "owner_correct": 100.0,
+        "safe_completion": 37.5,
+        "evidence_correct": 37.5
+      },
+      "total_tokens": 0,
+      "duration_ms": 0,
+      "cost": null,
+      "cases": [
+        {
+          "case_id": "damage",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "crash",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "match",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "vague",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "missing-version",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "missing-source",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "instruction",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "duplicate",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": false,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "strategy": "single_llm",
+      "metrics": {
+        "category_correct": 100.0,
+        "owner_correct": 100.0,
+        "safe_completion": 37.5,
+        "evidence_correct": 37.5
+      },
+      "total_tokens": 0,
+      "duration_ms": 0,
+      "cost": null,
+      "cases": [
+        {
+          "case_id": "damage",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "crash",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "match",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "vague",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "missing-version",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "missing-source",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "instruction",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": null,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        },
+        {
+          "case_id": "duplicate",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": false,
+          "evidence_correct": false,
+          "tool_complete": null,
+          "duplicate_retrieved": false,
+          "tokens": 0,
+          "duration_ms": 0,
+          "error": null
+        }
+      ]
+    },
+    {
+      "strategy": "agent",
+      "metrics": {
+        "category_correct": 100.0,
+        "owner_correct": 100.0,
+        "safe_completion": 100.0,
+        "evidence_correct": 100.0
+      },
+      "total_tokens": 0,
+      "duration_ms": 49,
+      "cost": null,
+      "cases": [
+        {
+          "case_id": "damage",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": true,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 16,
+          "error": null
+        },
+        {
+          "case_id": "crash",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": true,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 7,
+          "error": null
+        },
+        {
+          "case_id": "match",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": true,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 4,
+          "error": null
+        },
+        {
+          "case_id": "vague",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": true,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 4,
+          "error": null
+        },
+        {
+          "case_id": "missing-version",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": true,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 4,
+          "error": null
+        },
+        {
+          "case_id": "missing-source",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": true,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 5,
+          "error": null
+        },
+        {
+          "case_id": "instruction",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": true,
+          "duplicate_retrieved": null,
+          "tokens": 0,
+          "duration_ms": 4,
+          "error": null
+        },
+        {
+          "case_id": "duplicate",
+          "category_correct": true,
+          "owner_correct": true,
+          "safe_completion": true,
+          "evidence_correct": true,
+          "tool_complete": true,
+          "duplicate_retrieved": true,
+          "tokens": 0,
+          "duration_ms": 5,
+          "error": null
+        }
+      ]
+    }
+  ]
+}
