@@ -4,8 +4,10 @@ from .database import Base, engine
 from . import models  # register metadata
 
 VERSIONS = [
+    # Index metadata is additive; existing policy and run snapshots remain unchanged.
     ("001_core", ("tenants","users","workflows","workflow_versions","executions","execution_logs","templates","agent_feedbacks","workflow_run_snapshots","agent_runs","agent_tickets","business_leases")),
     ("002_service", ("service_catalogues","service_orders","service_policies","service_conversations","service_tasks","service_turns","service_audits","service_ticket_states","business_dispatches","service_datasets","service_experiments")),
+    ("003_policy_indexes", ("policy_indexes",)),
 ]
 version_table = Table("schema_versions", MetaData(), Column("version",String(40),primary_key=True))
 
@@ -31,4 +33,4 @@ def upgrade(target_engine):
 
 if __name__=="__main__":
     upgrade(engine)
-    print("Schema upgraded to 002_service; existing rows preserved.")
+    print("Schema upgraded to 003_policy_indexes; existing rows preserved.")

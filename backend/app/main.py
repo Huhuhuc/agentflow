@@ -22,6 +22,7 @@ from .agent_api import router as agent_router
 from .business_api import router as business_router
 from .service_api import router as service_router
 from .service_experiments import router as experiment_router
+from .policy_index_api import router as policy_index_router
 
 
 @asynccontextmanager
@@ -45,6 +46,7 @@ app.include_router(agent_router)
 app.include_router(business_router)
 app.include_router(service_router)
 app.include_router(experiment_router)
+app.include_router(policy_index_router)
 app.add_middleware(CORSMiddleware, allow_origins=settings.cors_origins.split(","), allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 
 

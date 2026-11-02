@@ -10,7 +10,7 @@ def test_fresh_and_repeated_upgrade_preserves_rows(tmp_path):
     upgrade(engine)
     with engine.connect() as connection:
         assert connection.exec_driver_sql("SELECT name FROM tenants WHERE id='kept'").scalar()=="Existing tenant"
-        assert set(connection.scalars(select(version_table.c.version)))=={"001_core","002_service"}
+        assert set(connection.scalars(select(version_table.c.version)))=={"001_core","002_service","003_policy_indexes"}
         assert "service_tasks" in inspect(connection).get_table_names()
     engine.dispose()
 

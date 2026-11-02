@@ -150,6 +150,23 @@ class ServiceCatalogue(Base):
     revision: Mapped[int] = mapped_column(Integer, default=0)
 
 
+class PolicyIndex(Base):
+    __tablename__ = "policy_indexes"
+    __table_args__ = (UniqueConstraint("tenant_id", "policy_id", "fingerprint"),)
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=uid)
+    tenant_id: Mapped[str] = mapped_column(ForeignKey("tenants.id"), index=True)
+    policy_id: Mapped[str] = mapped_column(ForeignKey("service_policies.id"), index=True)
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    model_revision: Mapped[str] = mapped_column(String(200))
+    status: Mapped[str] = mapped_column(String(20), default="pending")
+    chunks: Mapped[list] = mapped_column(JSON, default=list)
+    vectors: Mapped[list] = mapped_column(JSON, default=list)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    token: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    error: Mapped[str | None] = mapped_column(String(100), nullable=True)
+
+
 class ServiceOrder(Base):
     __tablename__ = "service_orders"
     tenant_id: Mapped[str] = mapped_column(ForeignKey("tenants.id"), primary_key=True)

@@ -3,6 +3,7 @@ backend/.venv2/
 backend/*.db
 backend/__pycache__/
 backend/.pytest_cache/
+backend/pytest-of-*/
 frontend/node_modules/
 frontend/dist/
 .env

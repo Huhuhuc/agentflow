@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     llm_max_retries: int = 2
     llm_retry_backoff: float = 0.5
     execution_mode: str = "inline"
+    embedding_model_path: str = ""
+    embedding_revision: str = ""
     redis_url: str = "redis://localhost:6379/0"
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
