@@ -4,7 +4,9 @@
 
 新增政策索引状态 API、租户与角色校验、幂等建索引、租约隔离和有次数上限的重试，以及本地 embedding 适配和显式批处理入口。升级数据库后使用：`python -m app.migrations`。
 
-**当前业务检索仍为词法模式。** 新模块尚未接入自动索引调度、向量召回和前端；真实 embedding 权重尚未验收，测试向量不能代表检索效果。详见 [实现与使用边界](docs/rag-index-foundation.md) 和 [改进设计稿](docs/superpowers/specs/2026-11-02-agentflow-rag-design.md)。
+**业务检索默认仍为词法模式。** 已用本地 BGE 权重完成独立离线检索与拒答阈值实验，并接入显式 `RETRIEVAL_MODE=hybrid` 的售后 Agent 实验路径；索引缺失、版本不匹配或 embedding 超时会记录原因并回退到词法，工作台显示检索状态。36 条手工合成查询的结果与边界见 [离线检索评测](docs/retrieval-offline-evaluation.md)；实验不等于生产 RAG 能力。
+
+业务 Agent 现在支持显式 `RETRIEVAL_MODE=hybrid` 实验：仅使用当前租户快照中 ready 且 revision 匹配的政策索引，证据无法映射或索引不完整时会在轨迹中标记 `lexical_fallback`。默认仍为 `lexical`；`RETRIEVAL_ABSTENTION_THRESHOLD` 留空时不按分数拒答。配置示例见 `backend/.env.deepseek.example`。
 
 ## 企业售后工作台 v2
 
@@ -18,13 +20,13 @@ DeepSeek 接入：在 `backend/.env` 填写密钥，双击 `test-deepseek.bat` �
 
 新增默认入口“企业服务 Agent”：订单查询、规则检索、多轮工具调用、证据引用、工单草稿、人工确认/拒绝、取消和失败后检查点恢复。支持无密钥 Mock 演示及真实模型工具调用。具体演示步骤、运行方式及实现边界见 [企业服务 Agent 说明](docs/business-agent.md)。
 
-示例：“订单 A102 为什么无法退款？请生成申诉工单。” 数据为合成订单，检索为关键词匹配；工单保存在本地平台。尚未接入生产订单系统和向量 RAG。
+示例：“订单 A102 为什么无法退款？请生成申诉工单。” 数据为合成订单，工单保存在本地平台。默认仍是关键词检索；hybrid 只作为显式本地实验模式，不代表已经接入生产订单系统或完成线上向量 RAG 验收。
 
 ## 反馈处理 Agent
 
 主目录已增加反馈处理 Agent 工作台：真实模式使用 function calling 选择版本资料查询、相似反馈查询与工单草稿工具；Mock 模式提供明确标注的无密钥演示。支持固定运行快照、步骤与调用预算、逐步轨迹、人工确认及离线评估。详见 [实现与演示说明](docs/feedback-agent.md)。游戏策划平台的独立 worktree 尚未整体合并。
 
-默认进入 Agent 工作台，提交反馈后可以检查检索证据、工具结果与待确认草稿。确认仅保存本项目工单，不调用外部系统。知识资料和评估样本为合成示例，检索为关键词匹配；不能将 Mock 评估写成真实模型准确率。
+默认进入 Agent 工作台，提交反馈后可以检查检索证据、工具结果与待确认草稿，并查看政策检索的模式、耗时、回退原因和拒答状态。确认仅保存本项目工单，不调用外部系统。知识资料和评估样本为合成示例；不能将 Mock 评估写成真实模型准确率。
 
 AgentFlow 是一个适合作品集展示的 AI Agent 工作流编排平台。项目将可视化 React Flow 编辑器、FastAPI 后端、持久化工作流版本、DAG 执行引擎、节点级日志、模型用量统计，以及确定性 Mock LLM 模式组合成一套完整的前后端工程。
 
@@ -111,6 +113,7 @@ npm run build
 - 基于 React Flow 与 FastAPI 搭建可视化 AI 工作流平台，支持图结构校验、拓扑执行、条件分支、重试、节点日志和工作流版本管理。
 - 设计 PostgreSQL 租户隔离、Redis/Celery 异步执行、JWT 鉴权、SSE 状态推送和 Docker Compose 部署方案。
 - 实现真实/Mock 双模式 LLM 网关（OpenAI-compatible，支持提示词模板与 JSON 结构化输出），并按错误类型分级重试——瞬时故障指数退避且遵守 `Retry-After`，确定性错误快速失败；Mock 模式使面试官无需付费 API 凭证也能跑通完整演示。
+- 构建本地 BGE 离线检索对照：冻结 36 条合成查询，按政策组隔离 dev/test，仅用 dev 校准拒答阈值，并在 test 统计 Recall@5、误答与误拒；发现 RRF 混合策略在 3 条无答案留出样本中误答 2 条，因此未将其设为线上默认检索。
 
 ## 诚实范围说明
 

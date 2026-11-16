@@ -30,14 +30,14 @@ def split_text(text, size=400, overlap=40):
     return result
 
 
-def enqueue(db, tenant_id, policy_id, model_revision):
+def enqueue(db, tenant_id, policy_id, model_revision, chunker=None):
     if not model_revision or len(model_revision) > 200:
         raise ValueError("Immutable model revision required")
     policy = db.scalar(select(ServicePolicy).where(ServicePolicy.id == policy_id, ServicePolicy.tenant_id == tenant_id))
     if not policy:
         raise LookupError("Policy not found")
-    chunks = split_text(policy.text)
-    digest = hashlib.sha256(json.dumps([policy.text, policy.version, CHUNKER, model_revision], ensure_ascii=False).encode()).hexdigest()
+    chunks = chunker(policy.text) if chunker else split_text(policy.text)
+    digest = hashlib.sha256(json.dumps([policy.text, policy.version, CHUNKER, model_revision, chunks], ensure_ascii=False).encode()).hexdigest()
     query = select(PolicyIndex).where(PolicyIndex.tenant_id == tenant_id, PolicyIndex.policy_id == policy_id, PolicyIndex.fingerprint == digest)
     existing = db.scalar(query)
     if existing:

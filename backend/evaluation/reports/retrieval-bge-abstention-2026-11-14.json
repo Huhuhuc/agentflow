@@ -1,0 +1,2192 @@
+{
+  "dataset_sha256": "0684e9b65250bd95214d72dfd535c5d679a23240fcf994341e19b76d13219517",
+  "model_fingerprint": "sha256:4f00e948269875f28252838157636dcaa6aa4747289c3fc6f65b194853bbd25d",
+  "upstream_revision": "7999e1d3359715c523056ef9478215996d62a620",
+  "scope": "36 synthetic queries; 30 positive and 6 no-answer probes. Abstention thresholds are selected per strategy on dev by balanced outcome rate, then evaluated once on test. No independent annotation or statistical significance; synthetic labels are author-defined.",
+  "baseline": "lexical bigram without business topic gate; not identical to production search_policy",
+  "settings": {
+    "rrf_k": 60,
+    "top_k": 5,
+    "query_instruction": "BGE Chinese retrieval prefix",
+    "normalized": true
+  },
+  "dependencies": {
+    "torch": "2.6.0+cpu",
+    "sentence-transformers": "3.4.1",
+    "transformers": "4.48.3"
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "load_seconds": 19.568,
+  "document_embedding_seconds": 0.188,
+  "dimensions": 512,
+  "chunks": [
+    {
+      "start": 0,
+      "end": 48,
+      "text": "未使用且不影响二次销售的普通商品，自签收之日起七天内可申请无理由退货。超过七天不适用无理由退货。",
+      "id": "refund-window:0",
+      "group": "refund-window"
+    },
+    {
+      "start": 0,
+      "end": 46,
+      "text": "非质量问题的无理由退货，寄回运费由买家承担。经核实存在商品质量问题时，商家承担合理退回运费。",
+      "id": "refund-freight:0",
+      "group": "refund-freight"
+    },
+    {
+      "start": 0,
+      "end": 35,
+      "text": "退货经仓库验收通过后，退款在三个工作日内原路退回支付账户，节假日顺延。",
+      "id": "refund-time:0",
+      "group": "refund-time"
+    },
+    {
+      "start": 0,
+      "end": 53,
+      "text": "物流超过承诺送达时间二十四小时仍未签收，可申请配送异常核查。客服将在两个工作日内回复核查结果，不保证赔偿。",
+      "id": "delivery-delay:0",
+      "group": "delivery-delay"
+    },
+    {
+      "start": 0,
+      "end": 53,
+      "text": "订单未出库时可申请修改收货地址，需核验订单归属。出库后不能直接改址，可联系承运商尝试拦截，拦截不保证成功。",
+      "id": "address:0",
+      "group": "address"
+    },
+    {
+      "start": 0,
+      "end": 43,
+      "text": "订单完成后可申请电子普通发票。发票抬头需与提供信息一致，开票金额不包含优惠券抵扣部分。",
+      "id": "invoice:0",
+      "group": "invoice"
+    },
+    {
+      "start": 0,
+      "end": 49,
+      "text": "签收时发现外包装破损，应保留包装和商品照片，并在四十八小时内提交破损反馈。反馈不等于退款审批通过。",
+      "id": "damaged:0",
+      "group": "damaged"
+    },
+    {
+      "start": 0,
+      "end": 38,
+      "text": "按消费者要求定制的商品不适用七天无理由退货；存在质量问题时仍可提交售后核查。",
+      "id": "custom:0",
+      "group": "custom"
+    },
+    {
+      "start": 0,
+      "end": 41,
+      "text": "本店电器自签收日起保修一年。人为损坏、私自拆机不在免费保修范围，需检测后报价维修。",
+      "id": "warranty:0",
+      "group": "warranty"
+    },
+    {
+      "start": 0,
+      "end": 39,
+      "text": "取消订单后，未过期优惠券可退回账户；已过期优惠券不予延期。优惠券不可兑换现金。",
+      "id": "coupon:0",
+      "group": "coupon"
+    }
+  ],
+  "summary": {
+    "dev": {
+      "lexical": {
+        "answerable_tasks": 15,
+        "hit_at_5": 1.0,
+        "mrr_at_5": 0.7833333333333333
+      },
+      "vector": {
+        "answerable_tasks": 15,
+        "hit_at_5": 1.0,
+        "mrr_at_5": 0.9666666666666667
+      },
+      "hybrid": {
+        "answerable_tasks": 15,
+        "hit_at_5": 1.0,
+        "mrr_at_5": 0.9
+      }
+    },
+    "test": {
+      "lexical": {
+        "answerable_tasks": 15,
+        "hit_at_5": 1.0,
+        "mrr_at_5": 0.9466666666666667
+      },
+      "vector": {
+        "answerable_tasks": 15,
+        "hit_at_5": 1.0,
+        "mrr_at_5": 1.0
+      },
+      "hybrid": {
+        "answerable_tasks": 15,
+        "hit_at_5": 1.0,
+        "mrr_at_5": 1.0
+      }
+    }
+  },
+  "abstention": {
+    "lexical": {
+      "threshold": 2.0,
+      "dev_metrics": {
+        "queries": 18,
+        "answerable_queries": 15,
+        "unanswerable_queries": 3,
+        "threshold": 2.0,
+        "correct_answers": 9,
+        "unsupported_answers": 1,
+        "false_answers": 0,
+        "correct_abstentions": 3,
+        "abstained_answerable": 5,
+        "coverage": 0.5555555555555556,
+        "answer_precision": 0.9,
+        "answer_recall": 0.6,
+        "false_answer_rate": 0.0,
+        "false_abstention_rate": 0.3333333333333333,
+        "balanced_outcome_rate": 0.8
+      },
+      "selection": "max balanced_outcome_rate; ties prefer fewer false answers, then higher threshold",
+      "test_metrics": {
+        "queries": 18,
+        "answerable_queries": 15,
+        "unanswerable_queries": 3,
+        "threshold": 2.0,
+        "correct_answers": 13,
+        "unsupported_answers": 0,
+        "false_answers": 0,
+        "correct_abstentions": 3,
+        "abstained_answerable": 2,
+        "coverage": 0.7222222222222222,
+        "answer_precision": 1.0,
+        "answer_recall": 0.8666666666666667,
+        "false_answer_rate": 0.0,
+        "false_abstention_rate": 0.13333333333333333,
+        "balanced_outcome_rate": 0.9333333333333333
+      }
+    },
+    "vector": {
+      "threshold": 0.5170662203962549,
+      "dev_metrics": {
+        "queries": 18,
+        "answerable_queries": 15,
+        "unanswerable_queries": 3,
+        "threshold": 0.5170662203962549,
+        "correct_answers": 14,
+        "unsupported_answers": 1,
+        "false_answers": 0,
+        "correct_abstentions": 3,
+        "abstained_answerable": 0,
+        "coverage": 0.8333333333333334,
+        "answer_precision": 0.9333333333333333,
+        "answer_recall": 0.9333333333333333,
+        "false_answer_rate": 0.0,
+        "false_abstention_rate": 0.0,
+        "balanced_outcome_rate": 0.9666666666666667
+      },
+      "selection": "max balanced_outcome_rate; ties prefer fewer false answers, then higher threshold",
+      "test_metrics": {
+        "queries": 18,
+        "answerable_queries": 15,
+        "unanswerable_queries": 3,
+        "threshold": 0.5170662203962549,
+        "correct_answers": 14,
+        "unsupported_answers": 0,
+        "false_answers": 0,
+        "correct_abstentions": 3,
+        "abstained_answerable": 1,
+        "coverage": 0.7777777777777778,
+        "answer_precision": 1.0,
+        "answer_recall": 0.9333333333333333,
+        "false_answer_rate": 0.0,
+        "false_abstention_rate": 0.06666666666666667,
+        "balanced_outcome_rate": 0.9666666666666667
+      }
+    },
+    "hybrid": {
+      "threshold": 0.032266458495966696,
+      "dev_metrics": {
+        "queries": 18,
+        "answerable_queries": 15,
+        "unanswerable_queries": 3,
+        "threshold": 0.032266458495966696,
+        "correct_answers": 12,
+        "unsupported_answers": 3,
+        "false_answers": 1,
+        "correct_abstentions": 2,
+        "abstained_answerable": 0,
+        "coverage": 0.8888888888888888,
+        "answer_precision": 0.75,
+        "answer_recall": 0.8,
+        "false_answer_rate": 0.3333333333333333,
+        "false_abstention_rate": 0.0,
+        "balanced_outcome_rate": 0.7333333333333334
+      },
+      "selection": "max balanced_outcome_rate; ties prefer fewer false answers, then higher threshold",
+      "test_metrics": {
+        "queries": 18,
+        "answerable_queries": 15,
+        "unanswerable_queries": 3,
+        "threshold": 0.032266458495966696,
+        "correct_answers": 14,
+        "unsupported_answers": 0,
+        "false_answers": 2,
+        "correct_abstentions": 1,
+        "abstained_answerable": 1,
+        "coverage": 0.8888888888888888,
+        "answer_precision": 0.875,
+        "answer_recall": 0.9333333333333333,
+        "false_answer_rate": 0.6666666666666666,
+        "false_abstention_rate": 0.06666666666666667,
+        "balanced_outcome_rate": 0.6333333333333333
+      }
+    }
+  },
+  "rows": [
+    {
+      "id": "refund-window:0",
+      "split": "dev",
+      "query": "签收三天没用过能退吗？",
+      "answerable": true,
+      "query_embedding_ms": 33.5,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "damaged:0",
+            "delivery-delay:0",
+            "refund-window:0",
+            "warranty:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.3333333333333333,
+          "top_score": 1,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "refund-window:0",
+            "damaged:0",
+            "refund-time:0",
+            "custom:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6864963240961166,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "damaged:0",
+            "refund-window:0",
+            "delivery-delay:0",
+            "custom:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.5,
+          "top_score": 0.03252247488101534,
+          "top1_correct": false,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "refund-window:1",
+      "split": "dev",
+      "query": "买了十天想无理由退货",
+      "answerable": true,
+      "query_embedding_ms": 47.409,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "custom:0",
+            "refund-freight:0",
+            "refund-window:0",
+            "refund-time:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.3333333333333333,
+          "top_score": 4,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "custom:0",
+            "refund-window:0",
+            "refund-freight:0",
+            "refund-time:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.5,
+          "top_score": 0.6676667630367807,
+          "top1_correct": false,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "custom:0",
+            "refund-window:0",
+            "refund-freight:0",
+            "refund-time:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.5,
+          "top_score": 0.03278688524590164,
+          "top1_correct": false,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "refund-window:2",
+      "split": "dev",
+      "query": "什么时间内可以申请无理由退货？",
+      "answerable": true,
+      "query_embedding_ms": 35.067,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "refund-window:0",
+            "custom:0",
+            "refund-freight:0",
+            "delivery-delay:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 7,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "refund-window:0",
+            "custom:0",
+            "refund-freight:0",
+            "refund-time:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.7056858439414895,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "refund-window:0",
+            "custom:0",
+            "refund-freight:0",
+            "refund-time:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "refund-freight:0",
+      "split": "test",
+      "query": "不喜欢这个商品，寄回去的钱谁出？",
+      "answerable": true,
+      "query_embedding_ms": 38.651,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "refund-freight:0",
+            "refund-window:0",
+            "custom:0",
+            "damaged:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 3,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "refund-freight:0",
+            "damaged:0",
+            "refund-window:0",
+            "custom:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.5654204246780449,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "refund-freight:0",
+            "refund-window:0",
+            "damaged:0",
+            "custom:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "refund-freight:1",
+      "split": "test",
+      "query": "东西坏了退回邮费由谁承担？",
+      "answerable": true,
+      "query_embedding_ms": 37.715,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "refund-freight:0",
+            "coupon:0",
+            "refund-time:0",
+            "address:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 3,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "refund-freight:0",
+            "damaged:0",
+            "refund-time:0",
+            "custom:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.7036343610941612,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "refund-freight:0",
+            "refund-time:0",
+            "damaged:0",
+            "coupon:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "refund-freight:2",
+      "split": "test",
+      "query": "质量问题和无理由退货的运费有何区别？",
+      "answerable": true,
+      "query_embedding_ms": 34.304,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "refund-freight:0",
+            "custom:0",
+            "refund-window:0",
+            "refund-time:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 8,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "refund-freight:0",
+            "custom:0",
+            "refund-window:0",
+            "refund-time:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.782601814502379,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "refund-freight:0",
+            "custom:0",
+            "refund-window:0",
+            "refund-time:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "refund-time:0",
+      "split": "dev",
+      "query": "仓库收货检查通过后多久到账？",
+      "answerable": true,
+      "query_embedding_ms": 37.034,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "refund-time:0",
+            "address:0",
+            "damaged:0",
+            "coupon:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 3,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "refund-time:0",
+            "damaged:0",
+            "delivery-delay:0",
+            "address:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6632757735279414,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "refund-time:0",
+            "damaged:0",
+            "address:0",
+            "delivery-delay:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "refund-time:1",
+      "split": "dev",
+      "query": "退款退到哪里？",
+      "answerable": true,
+      "query_embedding_ms": 44.256,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "damaged:0",
+            "refund-time:0",
+            "address:0",
+            "coupon:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.5,
+          "top_score": 1,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "refund-time:0",
+            "refund-freight:0",
+            "custom:0",
+            "coupon:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.5787124177205066,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "refund-time:0",
+            "damaged:0",
+            "custom:0",
+            "coupon:0",
+            "refund-freight:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03252247488101534,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "refund-time:2",
+      "split": "dev",
+      "query": "周末会计入退款处理时间吗？",
+      "answerable": true,
+      "query_embedding_ms": 35.74,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "damaged:0",
+            "delivery-delay:0",
+            "refund-time:0",
+            "address:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.3333333333333333,
+          "top_score": 1,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "refund-time:0",
+            "coupon:0",
+            "damaged:0",
+            "custom:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6018084283444143,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "refund-time:0",
+            "damaged:0",
+            "coupon:0",
+            "delivery-delay:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.032266458495966696,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "delivery-delay:0",
+      "split": "test",
+      "query": "包裹比承诺日期晚了两天怎么办？",
+      "answerable": true,
+      "query_embedding_ms": 38.863,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "delivery-delay:0",
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 1,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "delivery-delay:0",
+            "damaged:0",
+            "refund-time:0",
+            "refund-window:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.5743257381762368,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "delivery-delay:0",
+            "address:0",
+            "damaged:0",
+            "coupon:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "delivery-delay:1",
+      "split": "test",
+      "query": "查物流异常多久给答复？",
+      "answerable": true,
+      "query_embedding_ms": 25.252,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "delivery-delay:0",
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 2,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "delivery-delay:0",
+            "refund-time:0",
+            "damaged:0",
+            "refund-freight:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.7296660866748317,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "delivery-delay:0",
+            "address:0",
+            "damaged:0",
+            "refund-time:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "delivery-delay:2",
+      "split": "test",
+      "query": "晚到一天是不是肯定赔钱？",
+      "answerable": true,
+      "query_embedding_ms": 20.149,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.2,
+          "top_score": 0,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "delivery-delay:0",
+            "damaged:0",
+            "custom:0",
+            "warranty:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.49015779086274475,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": true
+        },
+        "hybrid": {
+          "ids": [
+            "delivery-delay:0",
+            "damaged:0",
+            "custom:0",
+            "address:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03177805800756621,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": true
+        }
+      }
+    },
+    {
+      "id": "address:0",
+      "split": "dev",
+      "query": "已经发走的包裹还能换地址吗？",
+      "answerable": true,
+      "query_embedding_ms": 22.144,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 1,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "address:0",
+            "delivery-delay:0",
+            "damaged:0",
+            "refund-freight:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.5968841577805472,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "address:0",
+            "delivery-delay:0",
+            "damaged:0",
+            "coupon:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "address:1",
+      "split": "dev",
+      "query": "还没出库想改收货地点",
+      "answerable": true,
+      "query_embedding_ms": 23.092,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 4,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "address:0",
+            "refund-time:0",
+            "delivery-delay:0",
+            "damaged:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6750129166833235,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "address:0",
+            "delivery-delay:0",
+            "damaged:0",
+            "custom:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "address:2",
+      "split": "dev",
+      "query": "申请拦截一定能成功吗？",
+      "answerable": true,
+      "query_embedding_ms": 17.53,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "delivery-delay:0",
+            "invoice:0",
+            "refund-window:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 3,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "address:0",
+            "invoice:0",
+            "damaged:0",
+            "refund-window:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.5170662203962549,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "address:0",
+            "invoice:0",
+            "delivery-delay:0",
+            "refund-window:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "invoice:0",
+      "split": "test",
+      "query": "优惠券抵扣的钱也能开发票吗？",
+      "answerable": true,
+      "query_embedding_ms": 17.409,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "invoice:0",
+            "coupon:0",
+            "address:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 5,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "invoice:0",
+            "coupon:0",
+            "refund-window:0",
+            "damaged:0",
+            "refund-freight:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6661806752824867,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "invoice:0",
+            "coupon:0",
+            "damaged:0",
+            "address:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "invoice:1",
+      "split": "test",
+      "query": "什么时候可以申请电子发票？",
+      "answerable": true,
+      "query_embedding_ms": 17.813,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "invoice:0",
+            "address:0",
+            "delivery-delay:0",
+            "refund-window:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 4,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "invoice:0",
+            "refund-window:0",
+            "damaged:0",
+            "coupon:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6490716664252428,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "invoice:0",
+            "refund-window:0",
+            "coupon:0",
+            "damaged:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "invoice:2",
+      "split": "test",
+      "query": "开票抬头按什么填写？",
+      "answerable": true,
+      "query_embedding_ms": 22.088,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "invoice:0",
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 3,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "invoice:0",
+            "refund-freight:0",
+            "refund-time:0",
+            "address:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.5921068308925307,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "invoice:0",
+            "address:0",
+            "refund-freight:0",
+            "damaged:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "damaged:0",
+      "split": "dev",
+      "query": "收到箱子破了要准备什么证据？",
+      "answerable": true,
+      "query_embedding_ms": 22.782,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.25,
+          "top_score": 0,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "damaged:0",
+            "address:0",
+            "delivery-delay:0",
+            "invoice:0",
+            "refund-freight:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.5516769848915363,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "address:0",
+            "damaged:0",
+            "delivery-delay:0",
+            "invoice:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 0.5,
+          "top_score": 0.03252247488101534,
+          "top1_correct": false,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "damaged:1",
+      "split": "dev",
+      "query": "收货发现破损多久内反馈？",
+      "answerable": true,
+      "query_embedding_ms": 26.664,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "damaged:0",
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 3,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "damaged:0",
+            "delivery-delay:0",
+            "refund-time:0",
+            "address:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.7228750383976784,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "damaged:0",
+            "address:0",
+            "delivery-delay:0",
+            "custom:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "damaged:2",
+      "split": "dev",
+      "query": "提交破损照片就一定能退款吗？",
+      "answerable": true,
+      "query_embedding_ms": 31.644,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "damaged:0",
+            "custom:0",
+            "refund-time:0",
+            "address:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 5,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "damaged:0",
+            "refund-window:0",
+            "custom:0",
+            "coupon:0",
+            "refund-freight:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.72028284405153,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "damaged:0",
+            "custom:0",
+            "refund-time:0",
+            "coupon:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "custom:0",
+      "split": "test",
+      "query": "刻了名字的定制商品不想要了能无理由退吗？",
+      "answerable": true,
+      "query_embedding_ms": 29.789,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "custom:0",
+            "refund-freight:0",
+            "refund-window:0",
+            "damaged:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 6,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "custom:0",
+            "refund-window:0",
+            "refund-freight:0",
+            "coupon:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6054384885120848,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "custom:0",
+            "refund-window:0",
+            "refund-freight:0",
+            "damaged:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "custom:1",
+      "split": "test",
+      "query": "定制品坏了还能申请售后吗？",
+      "answerable": true,
+      "query_embedding_ms": 41.279,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "custom:0",
+            "address:0",
+            "delivery-delay:0",
+            "invoice:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 2,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "custom:0",
+            "refund-window:0",
+            "warranty:0",
+            "damaged:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6197411599736243,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "custom:0",
+            "refund-window:0",
+            "address:0",
+            "invoice:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "custom:2",
+      "split": "test",
+      "query": "定制商品的退货例外是什么？",
+      "answerable": true,
+      "query_embedding_ms": 36.806,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "custom:0",
+            "refund-freight:0",
+            "refund-window:0",
+            "damaged:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 3,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "custom:0",
+            "refund-freight:0",
+            "refund-time:0",
+            "refund-window:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.5434858225989747,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "custom:0",
+            "refund-freight:0",
+            "refund-window:0",
+            "refund-time:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "warranty:0",
+      "split": "dev",
+      "query": "自己拆坏的电器能免费修吗？",
+      "answerable": true,
+      "query_embedding_ms": 34.537,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "warranty:0",
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 2,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "warranty:0",
+            "address:0",
+            "damaged:0",
+            "refund-window:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.7275522747356372,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "warranty:0",
+            "address:0",
+            "damaged:0",
+            "custom:0",
+            "coupon:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "warranty:1",
+      "split": "dev",
+      "query": "这家店电器保修多久？",
+      "answerable": true,
+      "query_embedding_ms": 31.139,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "warranty:0",
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 3,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "warranty:0",
+            "custom:0",
+            "damaged:0",
+            "address:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.7325125682014566,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "warranty:0",
+            "address:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "warranty:2",
+      "split": "dev",
+      "query": "人为损坏还能付费维修吗？",
+      "answerable": true,
+      "query_embedding_ms": 39.623,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "warranty:0",
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 4,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "warranty:0",
+            "damaged:0",
+            "refund-freight:0",
+            "custom:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6425201540571642,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "warranty:0",
+            "address:0",
+            "damaged:0",
+            "custom:0",
+            "refund-freight:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "coupon:0",
+      "split": "test",
+      "query": "取消订单后优惠券还给吗？",
+      "answerable": true,
+      "query_embedding_ms": 31.095,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "coupon:0",
+            "invoice:0",
+            "address:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 6,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "coupon:0",
+            "invoice:0",
+            "refund-window:0",
+            "damaged:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6976060214095441,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "coupon:0",
+            "invoice:0",
+            "damaged:0",
+            "custom:0",
+            "address:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "coupon:1",
+      "split": "test",
+      "query": "已经到期的券取消订单能延长吗？",
+      "answerable": true,
+      "query_embedding_ms": 20.916,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "coupon:0",
+            "address:0",
+            "invoice:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 3,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "coupon:0",
+            "refund-time:0",
+            "refund-window:0",
+            "invoice:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.7490412902873756,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "coupon:0",
+            "invoice:0",
+            "address:0",
+            "refund-time:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "coupon:2",
+      "split": "test",
+      "query": "优惠券能换成钱提现吗？",
+      "answerable": true,
+      "query_embedding_ms": 22.877,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "coupon:0",
+            "invoice:0",
+            "address:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 2,
+          "top1_correct": true,
+          "abstain_threshold": 2.0,
+          "abstain": false
+        },
+        "vector": {
+          "ids": [
+            "coupon:0",
+            "invoice:0",
+            "damaged:0",
+            "refund-window:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.6109294407503107,
+          "top1_correct": true,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": false
+        },
+        "hybrid": {
+          "ids": [
+            "coupon:0",
+            "invoice:0",
+            "damaged:0",
+            "address:0",
+            "custom:0"
+          ],
+          "hit_at_5": true,
+          "reciprocal_rank": 1.0,
+          "top_score": 0.03278688524590164,
+          "top1_correct": true,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "unknown-dev:0",
+      "split": "dev",
+      "query": "店里接受比特币支付吗？",
+      "answerable": false,
+      "query_embedding_ms": 28.646,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "refund-time:0",
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 1,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "refund-time:0",
+            "invoice:0",
+            "coupon:0",
+            "damaged:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.4085732355148885,
+          "top1_correct": false,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": true
+        },
+        "hybrid": {
+          "ids": [
+            "refund-time:0",
+            "coupon:0",
+            "address:0",
+            "invoice:0",
+            "damaged:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.03278688524590164,
+          "top1_correct": false,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "unknown-dev:1",
+      "split": "dev",
+      "query": "是否支持海外仓自提？",
+      "answerable": false,
+      "query_embedding_ms": 35.681,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "refund-time:0",
+            "refund-window:0",
+            "damaged:0",
+            "address:0",
+            "invoice:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.4072242888297694,
+          "top1_correct": false,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": true
+        },
+        "hybrid": {
+          "ids": [
+            "address:0",
+            "damaged:0",
+            "refund-time:0",
+            "coupon:0",
+            "refund-window:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.032018442622950824,
+          "top1_correct": false,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": true
+        }
+      }
+    },
+    {
+      "id": "unknown-dev:2",
+      "split": "dev",
+      "query": "会员生日送什么礼物？",
+      "answerable": false,
+      "query_embedding_ms": 42.578,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "refund-time:0",
+            "coupon:0",
+            "refund-window:0",
+            "invoice:0",
+            "refund-freight:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.33681317903334157,
+          "top1_correct": false,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": true
+        },
+        "hybrid": {
+          "ids": [
+            "coupon:0",
+            "refund-time:0",
+            "address:0",
+            "custom:0",
+            "invoice:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.03225806451612903,
+          "top1_correct": false,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": true
+        }
+      }
+    },
+    {
+      "id": "unknown-test:0",
+      "split": "test",
+      "query": "支持以旧换新补贴吗？",
+      "answerable": false,
+      "query_embedding_ms": 38.431,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "coupon:0",
+            "warranty:0",
+            "invoice:0",
+            "damaged:0",
+            "address:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.4550066856899532,
+          "top1_correct": false,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": true
+        },
+        "hybrid": {
+          "ids": [
+            "coupon:0",
+            "address:0",
+            "damaged:0",
+            "invoice:0",
+            "warranty:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.03252247488101534,
+          "top1_correct": false,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "unknown-test:1",
+      "split": "test",
+      "query": "能预约上门安装空调吗？",
+      "answerable": false,
+      "query_embedding_ms": 28.451,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "warranty:0",
+            "invoice:0",
+            "address:0",
+            "refund-window:0",
+            "custom:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.4330912589676864,
+          "top1_correct": false,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": true
+        },
+        "hybrid": {
+          "ids": [
+            "address:0",
+            "invoice:0",
+            "custom:0",
+            "warranty:0",
+            "coupon:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.032266458495966696,
+          "top1_correct": false,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": false
+        }
+      }
+    },
+    {
+      "id": "unknown-test:2",
+      "split": "test",
+      "query": "可以把积分转给朋友吗？",
+      "answerable": false,
+      "query_embedding_ms": 28.13,
+      "strategies": {
+        "lexical": {
+          "ids": [
+            "address:0",
+            "coupon:0",
+            "custom:0",
+            "damaged:0",
+            "delivery-delay:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0,
+          "top1_correct": false,
+          "abstain_threshold": 2.0,
+          "abstain": true
+        },
+        "vector": {
+          "ids": [
+            "damaged:0",
+            "invoice:0",
+            "coupon:0",
+            "refund-window:0",
+            "refund-time:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.363595097983943,
+          "top1_correct": false,
+          "abstain_threshold": 0.5170662203962549,
+          "abstain": true
+        },
+        "hybrid": {
+          "ids": [
+            "damaged:0",
+            "coupon:0",
+            "address:0",
+            "invoice:0",
+            "custom:0"
+          ],
+          "hit_at_5": null,
+          "reciprocal_rank": null,
+          "top_score": 0.032018442622950824,
+          "top1_correct": false,
+          "abstain_threshold": 0.032266458495966696,
+          "abstain": true
+        }
+      }
+    }
+  ]
+}

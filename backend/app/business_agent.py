@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from .agent_runtime import real_turn
 from .config import settings
 from .models import AgentRun
+from .business_retrieval import search_policy
 
 POLICIES = [
     {"id": "refund-v1", "title": "退款规则", "text": "模拟规则：已完成订单在签收后7天内且未使用可申请退款；已使用或超过7天需人工审核。申请不等于退款成功。", "source": "demo://policies/refund/v1"},
@@ -95,7 +96,7 @@ def validate_order_policy(refs, snap):
         raise ValueError("No applicable policy for this order status; request more information")
 
 
-def invoke(name, arguments, snap, evidence):
+def invoke(name, arguments, snap, evidence, db=None, tenant_id=None):
     if name not in ARGS:
         raise ValueError("Tool is not allowed")
     args = ARGS[name].model_validate(arguments)
@@ -114,12 +115,15 @@ def invoke(name, arguments, snap, evidence):
         topics = {x.removesuffix("-v1") for x in ids}
         items = [p for p in snap["knowledge"] if p["id"] in ids or p.get("topic") in topics]
         if snap.get("catalogue_type") == "tenant_database":
-            # Topic filter + lexical bigram ranking is an explicit, reproducible baseline.
-            grams = {query[i:i+2] for i in range(len(query)-1) if query[i:i+2].strip()}
-            items.sort(key=lambda p: sum(g in p["text"].lower() for g in grams), reverse=True)
-            items = items[:5]
+            ranking, retrieval = search_policy(query, items, snap, db, tenant_id or snap.get("tenant_id"))
+            items = [items[index] for index in ranking]
+            snap.setdefault("retrieval", {})["effective_mode"] = retrieval["retrieval"]
+            snap["retrieval"]["fallback_reason"] = retrieval["fallback_reason"]
+            output = {"results": items, **retrieval, "synthetic": True}
+        else:
+            output = {"results": items, "retrieval": "lexical", "abstained": False, "synthetic": True}
         evidence.update({p["id"]: p for p in items})
-        return {"results": items, "retrieval": "keyword", "synthetic": True}
+        return output
     if any(ref not in evidence for ref in args.evidence_ids):
         raise ValueError("Draft evidence was not retrieved")
     if "order-" + args.order_id not in args.evidence_ids or not any(ref in {p["id"] for p in snap["knowledge"]} for ref in args.evidence_ids):
@@ -164,10 +168,12 @@ def run_business(db: Session, run: AgentRun, adapter=None, lease_token=None):
     db.refresh(run)
     if not token: return run
     snap = run.snapshot
+    snap["tenant_id"] = run.tenant_id
     state = copy.deepcopy(run.result.get("checkpoint", {}))
     user_content = json.dumps({"message": snap["input"]["text"], "task_context": snap["context"]}, ensure_ascii=False) if "context" in snap else snap["input"]["text"]
     messages = state.get("messages", [{"role": "system", "content": snap["system_prompt"]}, *snap.get("conversation_messages", []), {"role": "user", "content": user_content}])
     evidence, draft = state.get("evidence", {}), state.get("draft")
+    retrieval_abstained = state.get("retrieval_abstained", False)
     calls_used = state.get("calls_used", 0)
     trace = copy.deepcopy(run.trace)
     limits = snap["limits"]
@@ -201,17 +207,24 @@ def run_business(db: Session, run: AgentRun, adapter=None, lease_token=None):
                 for call in calls:
                     try:
                         args = json.loads(call["arguments"]) if isinstance(call["arguments"], str) else call["arguments"]
-                        output = invoke(call["name"], args, snap, evidence)
+                        output = invoke(call["name"], args, snap, evidence, db, run.tenant_id)
                         if "draft" in output: draft = output["draft"]
+                        if call["name"] == "search_policy":
+                            retrieval_abstained = bool(output.get("abstained"))
                     except (ValueError, TypeError) as exc: output = {"error": str(exc)}
                     trace.append({"step": step, "kind": "tool", "name": call["name"], "arguments": call["arguments"], "output": output, "status": "failed" if "error" in output else "success"})
                     messages.append({"role": "tool", "tool_call_id": call["id"], "content": json.dumps(output, ensure_ascii=False)})
             else:
                 result = Result.model_validate(response.get("result", {})).model_dump()
-                if any(ref not in evidence for ref in result["evidence_ids"]): raise ValueError("Unretrieved evidence in answer")
-                if result["next_action"] in {"answer", "confirm_ticket"} and not result["evidence_ids"]: raise ValueError("Answer requires evidence")
-                if result["next_action"] in {"answer", "confirm_ticket"}: validate_order_policy(result["evidence_ids"], snap)
-                if result["next_action"] == "confirm_ticket" and (not draft or set(draft["evidence_ids"]) != set(result["evidence_ids"])): raise ValueError("Draft and answer evidence mismatch")
+                if retrieval_abstained:
+                    result = {"summary": "当前政策检索未达到配置的证据阈值，暂不能回答或创建工单，请补充资料或转人工核对。",
+                              "evidence_ids": [], "next_action": "needs_information"}
+                    draft = None
+                else:
+                    if any(ref not in evidence for ref in result["evidence_ids"]): raise ValueError("Unretrieved evidence in answer")
+                    if result["next_action"] in {"answer", "confirm_ticket"} and not result["evidence_ids"]: raise ValueError("Answer requires evidence")
+                    if result["next_action"] in {"answer", "confirm_ticket"}: validate_order_policy(result["evidence_ids"], snap)
+                    if result["next_action"] == "confirm_ticket" and (not draft or set(draft["evidence_ids"]) != set(result["evidence_ids"])): raise ValueError("Draft and answer evidence mismatch")
                 db.refresh(run, ["status"])
                 if run.status == "cancelled": return run
                 saved_result = {**result, "draft": draft if result["next_action"] == "confirm_ticket" else None, "evidence": list(evidence.values()), "synthetic": True}
@@ -219,7 +232,9 @@ def run_business(db: Session, run: AgentRun, adapter=None, lease_token=None):
                 save(status)
                 db.refresh(run)
                 return run
-            saved_result = {"checkpoint": {"messages": messages, "evidence": evidence, "draft": draft, "calls_used": calls_used, "step": step}}
+            saved_result = {"checkpoint": {"messages": messages, "evidence": evidence, "draft": draft,
+                                             "calls_used": calls_used, "step": step,
+                                             "retrieval_abstained": retrieval_abstained}}
             if not save():
                 db.refresh(run)
                 return run

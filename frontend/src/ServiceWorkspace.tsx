@@ -8,8 +8,9 @@ import './ServiceWorkspace.css'
 type Policy = { id: string; slug: string; title: string; text: string; version: number; topic: string; active: boolean; effective_from: string }
 type Catalogue = { orders: Record<string, unknown>[]; policies: Policy[]; real_model_configured: boolean; role: string; execution_mode: string }
 type Brief = { id: string; title: string; status: string; mode: string }
+type RetrievalEvent = { kind?: string; name?: string; output?: { retrieval?: string; fallback_reason?: string | null; abstained?: boolean; top_score?: number | null; duration_ms?: number } }
 type Task = Brief & { revision: number; conversation_id: string; context: unknown; messages: {sequence: number; text: string; answer: string; status: string}[]; audit: unknown[];
-  run: { id: string; status: string; trace: unknown[]; error_message?: string; duration_ms: number; token_used: number; result: {draft?: {title: string; summary: string}; evidence?: {id: string; title: string; text: string; source: string}[]} };
+  run: { id: string; status: string; trace: RetrievalEvent[]; error_message?: string; duration_ms: number; token_used: number; result: {draft?: {title: string; summary: string}; evidence?: {id: string; title: string; text: string; source: string}[]} };
   ticket: { id: string; status: string; note: string; revision: number } | null }
 const labels: Record<string, string> = { pending: '排队中', running: '执行中', awaiting_input: '等待补充', needs_information: '等待补充', completed: '已回答', awaiting_confirmation: '待审核', confirmed: '已建工单', rejected: '已拒绝', cancelled: '已取消', failed: '执行失败', open: '待处理', in_progress: '处理中', resolved: '已解决' }
 const csvExample = 'id,status,amount,days_since_delivery,used,overdue\nA201,delivered,199,3,false,\nA202,shipping,89,,,true'
@@ -61,6 +62,7 @@ export default function ServiceWorkspace() {
   })
   const isStaff = catalogue && ['admin', 'staff'].includes(catalogue.role)
   const canReply = task && !['running', 'pending', 'confirmed', 'cancelled'].includes(task.status)
+  const retrievalEvents = task?.run.trace.filter(event => event.kind === 'tool' && event.name === 'search_policy' && event.output) ?? []
   return <div className="agent-workspace service-workspace">
     <div className="agent-intro"><div><h2>企业售后工作台</h2><p>补充资料、核对政策、审核草稿，在同一会话里完成工单处理。</p></div><span className="service-chip">{catalogue?.execution_mode === 'celery' ? '独立 Worker' : '本地执行'}</span></div>
     <nav className="service-tabs" aria-label="售后工作区">{[['tasks','会话与工单'],['catalogue','订单与政策'],['evaluation','评测与复核']].map(([id,label]) => <button key={id} aria-pressed={tab === id} onClick={() => setTab(id)}>{label}</button>)}</nav>
@@ -88,6 +90,7 @@ export default function ServiceWorkspace() {
         {task.status === 'failed' && <button disabled={busy} onClick={() => void taskAction('resume')}>从检查点重试</button>}
         {!['confirmed','cancelled'].includes(task.status) && <button disabled={busy} onClick={() => void taskAction('cancel')}>取消任务</button>}
         <details className="agent-trace"><summary>引用依据（当前运行快照）</summary>{task.run.result.evidence?.map(e => <article className="agent-evidence" key={e.id}><b>{e.title}</b><p>{e.text}</p><code>{e.source}</code></article>)}</details>
+        {retrievalEvents.length > 0 && <section className="service-retrieval-status"><h4>政策检索状态</h4>{retrievalEvents.map((event, index) => <p key={index}><b>{event.output?.retrieval === 'hybrid' ? 'Hybrid' : event.output?.retrieval === 'lexical_fallback' ? '词法回退' : '词法'}</b>{event.output?.abstained ? ' · 已拒答' : ''}{event.output?.fallback_reason ? ` · 原因：${event.output.fallback_reason}` : ''}{event.output?.duration_ms != null ? ` · ${event.output.duration_ms} ms` : ''}</p>)}</section>}
         <details className="agent-trace"><summary>执行轨迹 · {task.run.duration_ms} ms · {task.run.token_used} 已记录 tokens</summary><pre>{JSON.stringify(task.run.trace,null,2)}</pre></details>
         <details className="agent-trace"><summary>审核与操作记录</summary><pre>{JSON.stringify(task.audit,null,2)}</pre></details>
       </section>}

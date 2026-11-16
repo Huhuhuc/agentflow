@@ -10,15 +10,24 @@ from .config import settings
 from .database import SessionLocal
 from .models import PolicyIndex
 from .policy_index import run
+from .retrieval import model_fingerprint, token_chunks, QUERY_PREFIX
 
 
 class LocalEmbedder:
     def __init__(self, path, revision):
         if not path or not revision or not Path(path).is_dir():
             raise ValueError('Local embedding directory and revision required')
+        if model_fingerprint(path) != revision:
+            raise ValueError('Model content fingerprint does not match configured revision')
         from sentence_transformers import SentenceTransformer
         self.model = SentenceTransformer(path, device='cpu', local_files_only=True, trust_remote_code=False)
         self.revision = revision
+
+    def chunks(self, text):
+        return token_chunks(text, self.model.tokenizer, self.model.max_seq_length)
+
+    def queries(self, texts):
+        return self([QUERY_PREFIX+text for text in texts], self.revision)
 
     def __call__(self, texts, revision):
         if revision != self.revision:

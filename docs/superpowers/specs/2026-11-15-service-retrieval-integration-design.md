@@ -1,7 +1,7 @@
 # 售后 Agent 业务检索接入设计
 
 日期：2026-11-15  
-状态：设计已确认，待实现  
+状态：设计已确认，核心路径已实现并通过测试
 目标：将已有政策索引接入售后 Agent 的 `search_policy` 工具，保留可核查证据、版本快照和词法降级能力。
 
 ## 1. 目标与边界
@@ -20,7 +20,7 @@
 
 `service_api.create_turn` 调用 `database_snapshot`，快照包含当前租户的订单、最高有效政策版本及带来源位置的原文块。`service_api.confirm` 会重新建立当前快照，并拒绝订单或被引用政策已变化的草稿。`business_agent.invoke("search_policy")` 是实际执行工具入口；目前租户资料路径只做主题过滤和 bigram 排序。
 
-`PolicyIndex` 保存政策 ID、不可变 fingerprint、模型 revision、分块和已校验向量。索引分块目前可能与 800 字符业务快照块不同，因此不能假设 chunk ID 相同。接入层必须通过政策 ID、原文区间或完整文本映射回快照证据；无法安全映射时该索引只能标记不可用并走 lexical_fallback。
+`PolicyIndex` 保存政策 ID、不可变 fingerprint、模型 revision、分块和已校验向量。索引分块目前可能与 800 字符业务快照块不同，因此不能假设 chunk ID 相同。接入层通过政策 ID 和原文区间映射回快照证据；无法安全映射时该索引标记不可用并走 lexical_fallback。当前实现已完成这一映射、租户过滤和 revision 校验。
 
 ## 3. 配置与数据流
 
@@ -85,7 +85,7 @@ retrieval: {
 - 返回证据始终属于当前 run 的快照，伪造证据 ID 仍被拒绝；
 - 审批前政策更新仍返回 409，重复确认仍保持幂等。
 
-新增端到端测试使用现有 SQLite fixture，分别运行 lexical、hybrid-ready、hybrid-fallback 和 abstention 四条路径。PostgreSQL/Celery 仍沿用现有专项测试，不在本轮扩大为完整部署验收。
+新增端到端测试使用现有 SQLite fixture，分别运行 lexical、hybrid-ready、hybrid-fallback、embedding timeout 和 abstention 路径。PostgreSQL/Celery 仍沿用现有专项测试，不在本轮扩大为完整部署验收。
 
 ## 7. 交付口径
 

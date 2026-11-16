@@ -12,13 +12,13 @@
 - `run` 接受 embedding 回调 `(texts, immutable_revision) -> list[list[float]]`，异常保存错误类型，不保存可能包含密钥的完整异常消息。
 - 非有限数、零向量、数量/维度不一致不发布 ready；向量在完整校验后归一化并一次事务写入。
 
-这不是已经上线的向量 RAG：尚未连接政策导入、索引队列/API、BGE 模型、向量召回或工作台。测试使用明确的合成向量，不能声称语义检索效果。本轮未调用付费模型，也未下载 embedding 权重。
+当前已将索引生命周期接入售后 Agent 的显式 `hybrid` 实验路径：工作台可显示实际检索模式、回退原因和拒答状态；默认业务仍为词法检索。索引检索只使用当前租户快照中 ready 且 revision 匹配的记录，测试使用明确的合成向量，不能声称生产语义检索效果。本轮未调用付费模型，也未下载 embedding 权重。
 
 分块当前为保留原文位置的 400 字符 / 40 字符重叠基线，独立于现有 800 字符业务快照；不是最终 tokenizer 分块。生产适配器必须加入 tokenizer 上限、输入大小、维度与模型 revision 校验；索引来源政策不可跨租户访问。
 
 过期租约在下一次领取时回收；最后一次租约超时在下一次领取时置 failed。没有后台扫描器时不会自动推进。重试为显式调用，不包含自动退避或 broker 补发。生产接入前必须补齐调度与有上限的 embedding 超时。
 
-后续顺序：冻结检索数据集与现有词法成绩 → tokenizer 与真实 embedding 适配 → 自动建索引和队列恢复 → API 与权限 → 检索融合及前端。完整设计见 `superpowers/specs/2026-11-02-agentflow-rag-design.md`。
+后续顺序：真实 embedding 权重与哈希校验 → 自动建索引和队列恢复 → PostgreSQL/Celery 部署验收 → 用真实租户资料校准拒答阈值。当前接入设计见 `superpowers/specs/2026-11-15-service-retrieval-integration-design.md`。
 
 ## 第二轮：索引 API 与本地 embedding 适配
 
@@ -32,6 +32,14 @@
 
 `python -m app.index_worker` 显式执行最多 10 个 pending / 过期任务。需要自行安装可兼容的可选 `sentence-transformers` 依赖并准备模型；本轮没有更改默认依赖或下载权重。适配器只允许本地文件、CPU 推理和非远程代码加载；按 tokenizer 检查超长块，发现超限报错而非截断。真实 embedding 尚未实测。
 
-这仍是分阶段实现：政策导入不会自动索引；尚无后台索引扫描器、Celery 索引派发、embedding 硬超时、tokenizer 自动重分块、检索融合或前端入口。生产启用前需补这些能力。批处理失败可通过 API 查看错误类型并重试，默认业务仍走原词法检索。
+这仍是分阶段实现：政策导入不会自动索引，尚无后台索引扫描器和生产级 broker 派发；查询 embedding 已有有界超时，超时或索引不完整会安全回退到词法。批处理失败可通过 API 查看错误类型并重试，默认业务仍走原词法检索。
 
 新增三项测试验证 API 创建/查询/幂等、租户和角色限制，以及适配器版本/超长输入拒绝。使用合成 embedding 与 tokenizer，不代表 BGE 实测结果。原始第一轮说明保留用于追踪实现顺序。
+
+## 第三轮：离线检索与拒答评测（2026-11-14）
+
+新增独立离线基准 `python -m evaluation.retrieval_benchmark`，使用本地 `BAAI/bge-small-zh-v1.5` 权重比较词法、向量与 RRF 混合排序。每个策略的拒答阈值只在 dev split 上按 balanced outcome rate 校准，再冻结到 test split；test 不参与阈值选择。结果及逐条得分保存在 `backend/evaluation/reports/retrieval-bge-abstention-2026-11-14.json`，便于复核。
+
+本次 test 共 18 条（15 条可回答、3 条无答案）。三种检索的 Recall@5 均为 15/15，但拒答结果不同：词法正确回答 13/15、正确拒答 3/3；向量正确回答 14/15、正确拒答 3/3；混合检索正确回答 14/15，却对 3 条无答案中的 2 条误答。详细阈值、覆盖率、误答率和误拒率见 [离线检索评测](retrieval-offline-evaluation.md)。这说明 top-5 找到正确条款与系统能否识别“无依据”是不同指标，当前证据不支持把混合检索设为更可靠的业务默认项。
+
+数据只有 36 条作者编写的合成查询，dev/test 各 18 条且按资料组隔离；每个 split 仅有 3 条无答案探针，标签没有独立复核，不做显著性或泛化结论。评测脚本不调用生成模型。该结果只验证离线排序分数阈值流程，不能替代真实租户资料验收。当前业务接入由端到端测试覆盖 hybrid-ready、hybrid-fallback、超时回退和 abstention；完整后端测试结果以最近一次 CI/本地运行记录为准。

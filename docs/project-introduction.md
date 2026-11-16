@@ -19,6 +19,8 @@ AgentFlow 是一个面向作品集展示的 AI Agent 工作流编排平台。它
 - Mock Agent 演示：无需真实付费 API Key，也可以完整跑通 AI Agent 工作流演示。
 - 全栈工程交付：包含 FastAPI 后端、PostgreSQL 存储、Redis/Celery 异步执行方案和 Docker Compose 部署。
 
+仓库另有售后政策检索模块：使用本地 BGE 比较词法、向量和混合排序，并将索引生命周期接入售后 Agent 的显式 `hybrid` 实验路径；索引缺失、版本不匹配或 embedding 超时会记录原因并回退到词法，默认仍为词法。样本是作者编写的合成数据；结果与限制见 [离线检索评测](retrieval-offline-evaluation.md)。
+
 ## 技术方案
 
 前端使用 React/Vite 构建操作界面，用 React Flow 承载节点画布、连线、节点配置和工作流编辑体验。后端使用 FastAPI 提供 REST API 与执行接口，围绕工作流、版本、执行记录、节点日志和租户数据建模。执行层以 DAG 为核心，先校验图结构，再按依赖关系运行节点，并将运行结果持久化。
@@ -40,6 +42,7 @@ AgentFlow 是一个面向作品集展示的 AI Agent 工作流编排平台。它
 - 基于 React Flow 与 FastAPI 搭建可视化 AI 工作流平台，支持图结构校验、拓扑执行、条件分支、重试、节点日志和工作流版本管理。
 - 设计 PostgreSQL 租户隔离、Redis/Celery 异步执行、JWT 鉴权、SSE 状态推送和 Docker Compose 部署方案。
 - 实现真实/Mock 双模式 LLM 网关（OpenAI-compatible，支持提示词模板与 JSON 结构化输出），并按错误类型分级重试——瞬时故障指数退避且遵守 `Retry-After`，确定性错误快速失败；Mock 模式使面试官无需付费 API 凭证也能跑通完整演示。
+- 构建本地 BGE 离线检索对照：冻结 36 条合成查询，按政策组隔离 dev/test，仅用 dev 校准拒答阈值，并在 test 统计 Recall@5、误答与误拒；发现 RRF 混合策略在 3 条无答案留出样本中误答 2 条，因此未将其设为线上默认检索。
 
 ## 范围说明
 
